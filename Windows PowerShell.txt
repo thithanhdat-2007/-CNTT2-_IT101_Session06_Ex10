@@ -1,0 +1,36 @@
+Windows PowerShell
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+PS C:\Users\admin> New-Item -ItemType Directory -Path "C:\BaiTap\LogCuaDat\app", "C:\BaiTap\LogCuaDat\database", "C:\BaiTap\LogCuaDat\payment" -Force
+
+
+    Directory: C:\BaiTap\LogCuaDat
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d-----        10/13/2026  12:48 AM                app
+d-----        10/13/2026  12:48 AM                database
+d-----        10/13/2026  12:48 AM                payment
+
+
+PS C:\Users\admin> "INFO Start", "ERROR TIMEOUT" | Set-Content "C:\BaiTap\LogCuaDat\app\app_2026-09-16.log"
+PS C:\Users\admin> "ERROR TIMEOUT", "INFO Success" | Set-Content "C:\BaiTap\LogCuaDat\app\app_2026-09-17.log"
+PS C:\Users\admin> "INFO Connected", "ERROR TIMEOUT" | Set-Content "C:\BaiTap\LogCuaDat\database\db_2026-09-17.log"
+PS C:\Users\admin> "INFO Payment", "ERROR TIMEOUT" | Set-Content "C:\BaiTap\LogCuaDat\payment\pay_2026-09-17.log"
+PS C:\Users\admin> Get-ChildItem -LiteralPath "C:\BaiTap\LogCuaDat" -Recurse -File -Force -ErrorAction Continue | ForEach-Object {
+>>     $filePath = $_.FullName
+>>     try {
+>>         Select-String -LiteralPath $filePath -Pattern "TIMEOUT" -SimpleMatch -CaseSensitive -ErrorAction Stop | ForEach-Object {
+>>             "{0}:{1}:{2}" -f $_.Path, $_.LineNumber, $_.Line
+>>         }
+>>     }
+>>     catch {
+>>         Write-Warning "Bo qua file khong doc duoc: $filePath"
+>>     }
+>> }
+C:\BaiTap\LogCuaDat\app\app_2026-09-16.log:2:ERROR TIMEOUT
+C:\BaiTap\LogCuaDat\app\app_2026-09-17.log:1:ERROR TIMEOUT
+C:\BaiTap\LogCuaDat\database\db_2026-09-17.log:2:ERROR TIMEOUT
+C:\BaiTap\LogCuaDat\payment\pay_2026-09-17.log:2:ERROR TIMEOUT
+PS C:\Users\admin>
